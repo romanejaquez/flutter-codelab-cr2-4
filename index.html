@@ -1,0 +1,375 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Flutter Codelab / Coding Roulette: Architecting your Flutter Apps Workshop (pt.4): Creating a Shopping Cart</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="flutter-codelab-cr2-4"
+                  title="Flutter Codelab / Coding Roulette: Architecting your Flutter Apps Workshop (pt.4): Creating a Shopping Cart"
+                  environment="web"
+                  feedback-link="https://romanjustcodes.web.app">
+    
+      <google-codelab-step label="Overview" duration="0">
+        <h2 is-upgraded>What You&#39;ll Build in this Workshop:</h2>
+<ul>
+<li>A simple shopping cart for our application, with capabilities of:  <ul>
+<li>adding items</li>
+<li>removing single items</li>
+<li>clearing all items from the card</li>
+<li>seeing the shopping cart item count on both the bottom bar and details page.</li>
+</ul>
+</li>
+<li>Create Flutter User interfaces with ease</li>
+<li>Common Flutter Layout strategies using just core widgets</li>
+<li>Creating custom Flutter widgets and achieve widget composition</li>
+<li>Creating Dart models to mock up app data</li>
+<li>Import network images</li>
+<li>Using Material Icon fonts</li>
+<li>State Management using Provider to decouple Business Logic of Components (BLoC)</li>
+<li>Animated Lists in Flutter</li>
+<li>Stateful and Stateless Widgets</li>
+</ul>
+<p class="image-container"><img alt="Shopping Cart" src="img/f61368176a646849.gif"></p>
+<p>Let&#39;s proceed!</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Set up the DonutShoppingCartService" duration="0">
+        <p>We&#39;ll start with setting up the provider service that will handle all the business logic for our shopping cart. We&#39;ll add functionality for the following:</p>
+<ul>
+<li>adding donuts to cart</li>
+<li>remove donuts from the card</li>
+<li>clearing all items from cart</li>
+<li>check whether an item is in the cart</li>
+<li>get total price of all items in the cart</li>
+</ul>
+<h2 is-upgraded>Creating the DonutShoppingCartService</h2>
+<p>Start by creating a class called <strong>DonutShoppingCartService</strong> that extends <strong>ChangeNotifier</strong>. This service will engage with other widgets to trigger their rebuilding by calling <strong>notifyListeners</strong> so as to update themselves based on the state of the shopping cart at any given time.</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/4873977799d95b60.png"></p>
+<p>Create a property called <strong>cartDonuts</strong>; this will be a <strong>List</strong> of type <strong>DonutModel</strong>. Initialize it with an empty array by default:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/e07ea9c2519a9e.png"></p>
+<h2 is-upgraded>Add to cart functionality</h2>
+<p>Create a method called <strong>addToCart</strong>, which takes as a parameter an object of type <strong>DonutModel</strong>. Add it to the <strong>cartDonuts</strong> collection, followed by the <strong>notifyListeners</strong> call. Eventually when we use this method, this will add the donut model, and trigger a rebuild on the listening widget:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/1e89662b5c017aed.png"></p>
+<h2 is-upgraded>Remove donut from cart by name</h2>
+<p>We&#39;ll use the name as something unique - feel free to pick a stronger strategy, but for the sake of this codelab, we&#39;ll use the name. Let&#39;s create a method called <strong>removeFromCart</strong> which takes an object of type <strong>DonutModel</strong>; finds a match by name in the list of cart donuts using the <strong>removeWhere</strong> helper method, passing the lambda expression that performs the evaluation, and if it finds it, then removes it, followed by a call to <strong>notifyListeners</strong>:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/6b5eed4cf6736d3.png"></p>
+<h2 is-upgraded>Clear all donuts from cart</h2>
+<p>To add the abilily to clear items out of the cart, let&#39;s add a method called <strong>clearCart</strong>, whose task will be to clear all items from the <strong>cartDonuts</strong> collection by calling the method <strong>clear</strong> on the list, as well as notify all listeners of it.</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/d8d1bc4a6a77c20e.png"></p>
+<h2 is-upgraded>Get total price of items in the cart</h2>
+<p>Let&#39;s create a simple method - we&#39;ll call it <strong>getTotal</strong> - that just loops through all of the donuts in the cart and adds up all the prices, and conveniently returns it to whoever requests it:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/67d30168b35ea15c.png"></p>
+<h2 is-upgraded>Check for the existing of a donut in the cart by name</h2>
+<p>Finally, let&#39;s create a simple method called <strong>isDonutInCart</strong> which takes an object of type <strong>DonutModel</strong>, and verifies whether there is an item with the same name in the collection, using the <strong>any</strong> plus a lambda to evaluate the condition, as such:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/4184ab5068abc068.png"></p>
+<p>And with that, we complete all methods required by the <strong>DonutShoppingCartService</strong>.</p>
+<p>Before using this provided service, make sure you add it to the list of <strong>MultiProvider</strong> providers at the root of the application, as follows:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/4184ab5068abc068.png"></p>
+<p>Now, let&#39;s go ahead and start using it!</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Adding items to a cart from the details page" duration="0">
+        <p>Let&#39;s use the newly created <strong>DonutShoppingCartService</strong> to provide the ability to add items to a shopping cart from the details page.</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/c41b81dd783af348.png"></p>
+<p>Let&#39;s go to the <strong>DonutShopDetails</strong> widget page.</p>
+<p>In order to accomplish the switching of <strong>Add To Cart</strong> to <strong>Added to Cart</strong> we definitely need to listen to the state of the <strong>DonutShoppingCartService</strong> to property rebuild the widget upon its state change.</p>
+<p>Locate the <strong>Container</strong> that represents the button <strong><em>Add To Cart</em></strong>. First things first, let&#39;s make this container tappable by wrapping it inside a <strong>GestureDetector</strong>, and set up the <strong>onTap</strong> event available by adding an empty handler we&#39;ll come back to it:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/383ad8aaefe9d0a4.png"></p>
+<p>Next, wrap the <strong>GestureDetector</strong> inside the return statement of a <strong>Consumer</strong> widget that listens to the <strong>DonutShoppingCartService</strong>, as follows:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/7bc309a3ac0702a0.png"></p>
+<p>By wrapping it inside a <strong>Consumer</strong> widget, we ensure that upon any changes that occur in the <strong>DonutShoppingCartService</strong>, the builder in the <strong>Consumer</strong> widget will be executed and rebuild its contents.</p>
+<p>Now that we have access to the <strong>DonutShoppingCartService</strong> via the <strong>Consumer</strong> widget so let&#39;s add a bit more logic.</p>
+<p>The <strong>Container</strong> widget that represents the <strong>Add To Cart</strong> button should only be displayed when the current donut we&#39;re viewing in the details page is not in the shopping cart. Let&#39;s leverage the shopping cart service&#39;s <strong>isDonutInCart</strong> method to conditionally render the button:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/5ff39809230884c7.png"></p>
+<p>We&#39;re not done yet! We&#39;re only handling the case when we need to show the <strong>Add To Cart</strong> button. For the case when the donut is indeed in the shopping cart, we need to render another little structure, the one that shows that the donut has already been added.</p>
+<p>Right at the end the <strong>Consumer</strong> builder, we will return a separate widget structure to illustrate the fact that the item is in the shopping cart.</p>
+<p>Return a <strong>Padding</strong> widget, with its padding set to 30px (top and bottom only). An as a child, add a <strong>Row</strong> widget with its children horizontally aligned using the <strong>MainAxisAlignment.center</strong>. Initialize its children with an empty array by default:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/68b9a77de9b1726.png"></p>
+<p>We need a similar structure as the <strong>Add To Cart</strong> button (an icon, some space, then a text label) so let&#39;s do just that:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/5e80816b7b05a149.png"></p>
+<p>Last thing to do is now execute the actual adding of the current donut into the shopping cart via the <strong>DonutShoppingCartService</strong>&#39;s *<strong>addToCart</strong> method, which will eventually trigger the rebuilding of the <strong>Consumer</strong> itself.</p>
+<p>Go back up a few lines, inside the <strong>GestureDetector</strong> that wraps our <strong>Add To Cart</strong> button. Inside its <strong>onTap</strong> event, add the following line:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/55d73e4b4988674a.png"></p>
+<p>Upon adding the item to the shopping cart, since the adding functionality triggers the <strong>notifyListeners</strong> and this widget is a <strong><em>listener</em></strong> as well, it will rebuild itself, and in the next build cycle, the logic to show the button will be <strong><em>false</em></strong>, making the execution fall down to the last return statement, thus showing the <strong>Added To Cart</strong> structure.</p>
+<p>Run it now on DartPad and notice how upon the user tapping on the <strong>Add To Cart</strong> it switches immediately to <strong>Added To Cart</strong>. This is the power of <strong>Consumer</strong> widgets and <strong>ChangeNotifiers</strong> in action!</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/178a41dde0f4e905.gif"></p>
+<p>Let&#39;s proceed now to see how many items have been added to the shopping cart, since we can&#39;t see them now anywhere in our UI (unless you debug it).</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Adding the Donut Shopping Cart badge widget" duration="0">
+        <p>Right now we are able to add items to a cart, but we can&#39;t see how many, or where they are. Let&#39;s start implementing those pieces.</p>
+<p>We want a quick and simple way to view how many items have been added to the cart, and for that we&#39;ll implement a small widget called <strong>DonutShoppingCartBadge</strong>, which will be a small badge we show at the top right corner of the screen; it will be part of the <strong>AppBar</strong>. The cool thing is that since &#34;everything is a widget&#34; in Flutter, we can just add this custom component as part of the <strong>actions</strong> in our <strong>AppBar</strong>. Let&#39;s proceed!</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/de4094707445d7be.png"></p>
+<h2 is-upgraded>Creating the DonutShoppingCartBadge widget</h2>
+<p>Let&#39;s create a custom widget class called <strong>DonutShoppingCartBadge</strong> that extends <strong>StatelessWidget</strong>. This one will be a <strong>StatelessWidget</strong> since it won&#39;t be maintaining state internally - rather it will be housing a <strong>Consumer</strong> widget, which is the one that will be listening for changes instead. Return a <strong>Container</strong> widget for now:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/258100ca851397d0.png"></p>
+<p>Let&#39;s add some styling to the <strong>Container</strong> to make it look like the badge in the design. Add the following to the <strong>Container</strong>:</p>
+<ul>
+<li>margin: 10px only on the right</li>
+<li>decoration: use a <strong>BoxDecoration</strong> to add:  <ul>
+<li>color: Utils.mainColor</li>
+<li>borderRadius: to make it look like a pill, add 40px radius all around</li>
+</ul>
+</li>
+</ul>
+<p class="image-container"><img alt="Shopping Cart" src="img/4a1312555e53cad1.png"></p>
+<p>As the child of this <strong>Container</strong>, we&#39;ll add the little shopping cart icon, some spacing, then a text label.</p>
+<p>For the <strong>Text</strong> widget, let&#39;s hardcode a value for a minute, just to get things in place. Make it bold, white and a font size of 20px:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/27745f1e2c166878.png"></p>
+<p>Add some spacing right after the <strong>Text</strong> widget, via a <strong>SizedBox</strong> widget, with 10px width:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/3222e0b739813d63.png"></p>
+<p>And last but not least, the <strong>Icon</strong> widget; use the <strong>Icons.shopping_cart</strong> icon, 25px in size and white:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/6cba55debe385be2.png"></p>
+<p>The core widget has been created. Let&#39;s put it in place before wrapping up its functionality. Locate the <strong>DonutShopDetails</strong> page, and go to the <strong>AppBar</strong> widget. Add an <a href="https://api.flutter.dev/flutter/material/AppBar/actions.html" target="_blank"><strong>actions</strong></a> property, which is a property that allows you to add widgets to the right hand side of the app bar, appropriate for options, menus - and in our case, a badge.</p>
+<p>Therefore, open up the <strong>actions</strong> property (which takes an array of widgets) and add our newly created <strong>DonutShoppingCartBadge</strong> widget inside, as such:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/a337d0d2f436be9b.png"></p>
+<p>Running this on DartPad should yield the following output:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/95abde3cb3eba3de.png"></p>
+<p>Oh, it looks huge! Let&#39;s go back to the <strong>DonutShopppingCartBadget</strong> widget to scale it down a bit. I have a trick - scale it down using a <strong>Transform</strong> widget with the *<strong>scale</strong> option, so wrap the <strong>Container</strong> inside a <strong>Transform</strong> widget, as such:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/f2580d6b1ccff8db.png"></p>
+<p>The <a href="https://api.flutter.dev/flutter/widgets/Transform/Transform.scale.html" target="_blank"><strong>Transform</strong></a> widget with the <strong>scale</strong> option, and passing a <strong>scael</strong> value of 0.7 allows it to scale down the enclosing widget uniformly.</p>
+<p>Try it out again in DartPad and see the effect:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/d676efe10ca17989.png"></p>
+<p>That looks about right! Let&#39;s now go ahead and provide the logic that will display it plus show the shopping cart items count in it.</p>
+<p>In the <strong>build</strong> method of the <strong>DonutShoppingCartBadge</strong>, instead of returning the <strong>Transform</strong> widget the encloses the <strong>Container</strong>, return a <strong>Consumer</strong> widget that listens to the <strong>DonutShoppingCartService</strong> this way, any changes that occur on the shopping cart (adding, removing, etc.) will be captured by this widget and render accordingly.</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/6d11d6112fdd91b2.png"></p>
+<p>Since we have the <strong>DonutShoppingCartService</strong> accessible here via the <strong>cartService</strong> reference, access the cart items count and supply it to the nested <strong>Text</strong> widget, replace the hardcoded value in there:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/cc97718cb283f3f5.png"></p>
+<p>Lastly, add the logic to return an empty <strong>SizedBox</strong> container when the cart is empty; we don&#39;t want to just show the badge with zero items. We&#39;ll only show it when 1 or more items:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/26de615574186046.png"></p>
+<p>Taking this functionality for a spin by adding items via the details page&#39;s <strong>Add To Cart</strong> functionality and you should see the following behavior:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/e70946d6380c5edd.gif"></p>
+<p>Notice how the badge only appears when there&#39;s one ore more, and as we add more items, the number increments! Awesome!</p>
+<p>Proceed to the next step to see the added items as a list on the shopping cart page!</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Creating the DonutShoppingCartPage: core widget" duration="0">
+        <p class="image-container"><img alt="Shopping Cart" src="img/1017ead4ef5fcb13.png"></p>
+<p>We now need to see the items in the shopping cart page, where you can view their details, remove items, clear all items, and see the total price of all items added.</p>
+<p>Check out both schematics:</p>
+<ul>
+<li>when it has items:</li>
+</ul>
+<p class="image-container"><img alt="Shopping Cart" src="img/2067f82d40cd6fd8.png"></p>
+<ul>
+<li>when it&#39;s empty</li>
+</ul>
+<p class="image-container"><img alt="Shopping Cart" src="img/4789243f86a594ca.png"></p>
+<p>Let&#39;s proceed!</p>
+<p>Create a class called <strong>DonutShoppingCartPage</strong> that extends <strong>StatefulWidget</strong> since we&#39;ll be using animations in here. Override its <strong>build</strong> method and return an empty <strong>Container</strong> widget for now:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/58f1beb8a0797d58.png"></p>
+<p>Go to the <strong>DonutShopMain</strong> page now. Replace the placeholder content we have on the <strong>Navigator</strong> widget for the &#34;/shoppingcart&#34; route in the <strong>onGenerateRoute</strong> switch statement. We currently have a <strong>Center</strong> widget wrapping a <strong>Text</strong> widget. Replace it by our newly created class <strong>DonutShoppingCartPage</strong>.</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/9eba3143a654794c.png"></p>
+<p>Let&#39;s start building the layout. Go to this widget&#39;s <strong>build</strong> method. Replace the placeholder <strong>Container</strong> by a <strong>Padding</strong> widget. Add padding of 40px all around, and as its direct child, add a <strong>Column</strong> widget. Initialize the <strong>Column</strong> with an empty array as its children, and its children horizontally aligned to the left, using <strong>CrossAxisAlignment.start</strong>:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/bca99685f871e539.png"></p>
+<p>As the first child of this <strong>Column</strong>, add an <strong>Image</strong> widget using the <strong>network</strong> option, with a width of 170px:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/bd6f22e30a5f313e.png"></p>
+<p>Let&#39;s give this image title an entrance! We want this title to come in with a fading animated transition, so let&#39;s work on that.</p>
+<p>Back to the top of the <strong>DonutShoppingCartPageState</strong> class, add the <strong>SingleTickerProviderStateMixin</strong> mixin to this class:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/147a6e41d55f4784.png"></p>
+<p>Of course, since this will be an explicit animation, we need an <strong>AnimationController</strong>, and we&#39;ll call it <strong>titleAnimation</strong>. Add it at the top of the class:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/bed4824f2d27c0b3.png"></p>
+<p>Override the class&#39; <strong>initState</strong> so we can initialize the <strong>AnimationController</strong> appropriately. Initialize the <strong>titleAnimation AnimationController</strong> with a duration of 500 ms, with a forward motion, calling the <strong>forward</strong> method on it:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/25012e580e024633.png"></p>
+<p>Always remember to clean up after yourself: override the <strong>dispose</strong> method, where you can dispose of the controller in question:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/6223940ae584e623.png"></p>
+<p>Back on the <strong>build</strong> method of this class, wrap the <strong>Image.network</strong> we placed a while back inside a <strong>FadeTransition</strong> widget. This is what will provide it with the desired fading effect. The <strong>FadeTransition</strong> takes an <strong>opacity</strong> property, to which you&#39;ll assign a <strong>Tween</strong> instance, with begin of 0.0 (invisible), end 1.0 (visible), and execute the <strong>animate</strong> method on it, passing the <strong>titleAnimation</strong> instance of <strong>AnimationController</strong> plus an animation curve of <strong>Curves.easeInOut</strong>, as follows:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/f3bfc91b17b27d9b.png"></p>
+<p>Testing this on DartPad, and we should see the title fading in as we navigate to the <strong>DonutShoppingCartPage</strong>:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/d982064e1a70b28a.gif"></p>
+<p>Making great progress so far!</p>
+<p>Let&#39;s continue to the next section.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Creating the DonutShoppingCartPage: Main Container" duration="0">
+        <p>We&#39;ll focus now on the middle content of the <strong>DonutShoppingCartPage</strong> widget, where we display the list of items, as well as a message for when there are no items as well.</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/9417a2afa65679bb.png"></p>
+<p>Since we want this middle region to occupy most of the real estate at the root <strong>Column</strong>, we need to start with an <strong>Expanded</strong> widget. Add as its immediate child for now a <strong>Center</strong> widget:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/8bce78391dc87619.png"></p>
+<p>Let&#39;s build the <strong>Center</strong> widget&#39;s structure.</p>
+<p>Add a <strong>SizedBox</strong> as a child of the <strong>Center</strong> widget. We are concernted on the width the most, so set a width of 200px:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/318cfbb868108ef3.png"></p>
+<p>We want to build that layout above, so we need a <strong>Column</strong>. Add it as an immediate child of the <strong>SizedBox</strong>, with its children center aligned vertically, so use the <strong>MainAxisAlignment.center</strong> option:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/3f6bed3314b0df68.png"></p>
+<p>We want to continue building the structure, which contains three items: an icon, some spacing, and a text label.</p>
+<p>Start by an <strong>Icon</strong> widget with the <strong>Icons.shopping_cart</strong> icon, grey color and 50px in size:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/83f585ca2cc64e01.png"></p>
+<p>Add some spacing under it using a <strong>SizedBox</strong>, 20px in height:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/aee81d84bb8adeb4.png"></p>
+<p>Lastly, add the text label saying &#34;You don&#39;t have any items on your cart yet!&#34;. Use a <strong>Text</strong> widget, with centered text and a grey color:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/343c8ea9fad98ba5.png"></p>
+<p>That should do it for this structure. Check it out how&#39;s looking by running it on DartPad:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/28a2d0a2427bc726.png"></p>
+<p>Now, we don&#39;t always show this little structure. We need to conditionally show it when there are no items in the cart. So as we&#39;ve done in the past, you must wrap this widget structure into a <strong>Consumer</strong> widget that listens to the changes in the <strong>DonutShoppingCartService</strong>, and checks whether the cart is empty so as to display it:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/f9c1c4aff42c5d3f.png"></p>
+<p>Notice that if the empty cart condition doesn&#39;t get hit, we still must return something. We are returning an empty <strong>Container</strong>, which we&#39;ll replace later with our own custom widget that holds the list of donuts in the cart.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Creating the DonutShoppingCartPage: Item List Row" duration="0">
+        <p>Let&#39;s focus now on the actual list of shopping cart items, but first we&#39;ll build out each row in the list. The schematic of this row is shown below:</p>
+<h2 is-upgraded>Creating the Donut Shopping List Row Item</h2>
+<p class="image-container"><img alt="Shopping Cart" src="img/71dbf080398682ac.png"></p>
+<p>Before we load the list, we need to style how each item in the list will look like. Let&#39;s proceed and create a custom widget class called <strong>DonutShoppingListRow</strong>.</p>
+<p>While overriding its <strong>build</strong> method, return a <strong>Padding</strong> widget, with its padding set to 10px top and bottom, 20px right, as such:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/3a2a05119a3c1182.png"></p>
+<p>We&#39;ll be adding the image of the donut, title, price and the ability for an item to be removed using a trash can icon, as in the image above, all of these lined up initially in a row fashion.</p>
+<p>Go ahead and add a <strong>Row</strong> as the immediate child of the <strong>Padding</strong> widget; start with an empty array as its children:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/19e19c564b773239.png"></p>
+<p>Before we go any further, this widget must take a <strong>DonutModel</strong> object, injected via the constructor. Create a property called <strong>donut</strong>, type <strong>DonutModel</strong> to hold on the supplied value via the constructor. This is the object that will feed all the child widgets within this row widget (the image, name, price, etc.):</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/3dc011f53c075b12.png"></p>
+<p>Now we can move on.</p>
+<p>Start by adding an <strong>Image</strong> widget with the <strong>network</strong> option, pulling the name of the image out of the <strong>donut</strong> model&#39;s <strong>imgUrl</strong> property; give it a width and height of 80px:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/8091b79a5b1b059f.png"></p>
+<p>Add some breathing room via a <strong>SizedBox</strong> with 10px width:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/175821349399f47a.png"></p>
+<p>Let&#39;s continue focusing on the <strong>Row</strong> layout.</p>
+<p>We want the middle content of this row to take up most of the row&#39;s real estate, and also to contain the name and the price, stacked as a column. To accomplish this, start by adding an <strong>Expanded</strong> widget, and as its child, a <strong>Column</strong> with items aligned horizontally to the left:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/1fa7d6d655210b40.png"></p>
+<p>In this <strong>Column</strong> widget, we&#39;ll lay out a <strong>Text</strong> widget to hold the name of the donut, followed by some space (<strong><em>SizedBox(height: 5)</em></strong>). Add the following specs to the <strong>Text</strong>:</p>
+<ul>
+<li>populate the <strong>Text</strong> content with <strong>donut.name</strong></li>
+<li>style: add a <strong>TextStyle</strong> with the following:  <ul>
+<li>color: Utils.mainDark</li>
+<li>fontSize: 15px</li>
+<li>fontWeight: bold</li>
+</ul>
+</li>
+</ul>
+<p>Your code should look like this:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/ad3af2fef56fed23.png"></p>
+<p>Let&#39;s work on the little badge for the price information. We also want it to look like a pill, so start with a <strong>Container</strong> widget with the following specs:</p>
+<ul>
+<li>padding: 5px top and bottom, 10px left and right</li>
+<li>decoration: use a <strong>BoxDecoration</strong> with the following properties:  <ul>
+<li>borderRadius: 20px radius all around</li>
+<li>border: 2px width, with a color of Utils.mainDark, with 20% opacity</li>
+</ul>
+</li>
+</ul>
+<p>Your <strong>Container</strong> code should look like this:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/a64b8d05add5a94c.png"></p>
+<p>Now, to finish up this <strong>Container</strong>, add a <strong>Text</strong> widget as its direct child, that pulls the price information from the <strong>donut</strong> model&#39;s <strong>price</strong> property. Use the utility method <strong>toStringAsFixed</strong> to format it accordingly, plus the following specs for styling it:</p>
+<ul>
+<li>color: Utils.mainDark with 40% opacity</li>
+<li>fontWeight: bold</li>
+</ul>
+<p>Final <strong>Container</strong> code should look as follows:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/634a3318d9902d4a.png"></p>
+<p>Done with the middle portion of the <strong>Row</strong> widget. Proceed to add some spacing between that and what we&#39;ll be laying out next, which is the <strong>IconButton</strong> (a <strong>SizedBox</strong> with 10px width should do):</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/5e2614371f0f61c3.png"></p>
+<p>Now, let&#39;s add the last piece of this <strong>Row</strong> widget, which is an <strong>IconButton</strong> widget. Create an <strong>IconButton</strong>; add an empty handler for its <strong>onPressed</strong> event (required), plus add an <strong>Icon</strong> widget with the <strong>Icons.delete_forever</strong> as its <strong>icon</strong> property, with a color of <strong>Utils.mainColor</strong>. We&#39;ll work on the functionality of deleting the row in a bit:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/7623032e5ed8407e.png"></p>
+<p>To keep this widget truly encapsulated, instead of triggering the functionality of deleting the widget right from inside (which we could!), but i&#39;d be cleaner if instead we provide some sort of callback that triggers the action, but from the outside.</p>
+<p>Add an additional property, type <strong>Function</strong>, called <strong>onDeleteRow</strong>, and its corresponding constructor parameter. This will hold a reference to a callback that we&#39;ll supply from its parent, which in turn will handle the actual deletion, that way this widget can remain truly encapsulated and can still trigger external functions via this callback.</p>
+<p>Notice we decorated the constructor parameter with the keyword <strong>required</strong>; this will enforce that this method is provided upon creating this wigdet so it doesn&#39;t blow up.</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/8f8bb11326043dab.png"></p>
+<p>Finally, trigger this callback method right from inside our <strong>IconButton</strong>&#39;s <strong>onPressed</strong> event; this will ensure that when the user taps on it, it will trigger whichever callback function we assign to it.</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/ad36d230069ee0ef.png"></p>
+<p>That about wraps up the layout for the <strong>DonutShoppingListRow</strong> widget. Now we need the ability to populate a <strong>ListView</strong> with widgets of type <strong>DonutShoppingListRow</strong>.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Creating the DonutShoppingCartPage: Item List" duration="0">
+        <p>Now that we developed how the rows will look like and function, let&#39;s proceed with the list that will load them.</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/a3922b072e7ff187.png"></p>
+<p>Let&#39;s proceed right away to create a custom widget called <strong>DonutShoppingList</strong> that extends <strong>StatefulWidget</strong> since we&#39;ll be adding animations to the list later. For now we&#39;ll be doing the core implementation. While overriding the <strong>build</strong> method, return a <strong>ListView</strong> widget, since we want a scrollable container of row items, each of which will be a <strong>DonutShoppingListRow</strong> widget.</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/82a18d5a0d254e10.png"></p>
+<p>Let&#39;s feed a list of <strong>DonutModel</strong> objects into it via the constructor, therefore create a property called <strong>donutCart</strong>, type <strong>List</strong> of <strong>DonutModel</strong>, and its corresponding constructor parameter:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/f54910a6375d9f79.png"></p>
+<p>In the <strong>build</strong> method, replace the <strong>ListView</strong> widget with a more appropriate <strong>List.builder</strong>, since we&#39;ll be providing a collection of items plus manage the way they get rendered. Set the <strong>ListView.builder</strong>&#39;s properties as follows:</p>
+<ul>
+<li>itemCount: the amount of items provided, pull the count out of the <strong>donutCart</strong>&#39;s length property</li>
+<li>itemBuilder: callback to render each row in the <strong>ListView</strong>, provided the <strong>context</strong> and the iteration index</li>
+</ul>
+<p>Your code should look like this:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/6723d07837bd5604.png"></p>
+<p>Proceed now to pull each <strong>DonutModel</strong> in turn out of the <strong>donutCart</strong> collection, using the <strong>index</strong> provided in the <strong>itemBuilder</strong>&#39;s callback:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/37dd4a82f375e8a0.png"></p>
+<p>Now, we need to generate the actual item to display for each row. Yes, you guessed it - we&#39;ll return a <strong>DonutShoppingListRow</strong> out of this method, providing to it the <strong>currentDonut</strong> model, as well as a callback, which we&#39;ll populate in a minute:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/a9fdb1fbdd5c5d4b.png"></p>
+<p>Let&#39;s take a pause now and test what we&#39;ve built so far.</p>
+<p>Go back to the <strong>DonutShoppingCartPageState</strong>&#39;s <strong><em>build</em></strong> method, and find the return statement inside the <strong>Consumer</strong> widget listening to the <strong>DonutShoppingCartService</strong>, where we&#39;re returning the empty <strong>Container</strong>. Replace that empty <strong>Container</strong> by our newly created <strong>DonutShoppingList</strong> widget, and pass into its <strong>donutCart</strong> parameter the list of donuts, available in <strong>cartService.cartDonuts</strong>, as such:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/492bf74dbe67f868.png"></p>
+<p>Let&#39;s run what we have so far on DartPad, just to see what we have. Click on a few donuts, navigate to their details page, and add them to cart; then navigate to the shopping cart page and you should see something like this:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/a2bd9ddd1063dc48.gif"></p>
+<p>Nice. Go ahead and tap on the trash can icon to the right of each row; it doesn&#39;t do anything at the moment. Let&#39;s take care of that right now.</p>
+<p>Since we already have an instance of <strong>DonutShoppingCartService</strong> at the <strong>DonutShoppingCartPage</strong> level, we could pass it down to the list.</p>
+<p>In the <strong>DonutShoppingList</strong> widget, add an additional parameter of type <strong>DonutShoppingCartService</strong>; add its corresponding constructor paramter.</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/8e9043594b603892.png"></p>
+<p>Now that the service made all the way to the list, we can now access its functionality from within here, and thus add it to our list row callback method, as such:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/7965c09aecae2a18.png"></p>
+<p>To recap: we injected the <strong>DonutShoppingCartService</strong> through the constructor; inside our row-rendering callback, at the point where we&#39;re building each row, we invoke the service&#39;s <strong>removeFromCart</strong> method inside the row&#39;s required callback <strong>onDeleteRow</strong>, passing into it the donut model in turn.</p>
+<p>Now, back in the <strong>DonutShoppingCartPage</strong>, right where we return the <strong>DonutShoppingList</strong>, pass the service instance we get from the <strong>Consumer</strong> and pass it down to it, as such:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/de5dbf5b25f5c2f0.png"></p>
+<p>Run it once again on DartPad, and now attempt to remove items by tapping on their trash can icon:</p>
+<p class="image-container"><img alt="Shopping Cart" src="img/c2e08fc81f827c44.gif"></p>
+<p>And then they are gone! Excellent execution, folks! See what happens when you architect your Flutter apps in a simple, clean and straightforward - things run smooth and nice! Kudos to all!</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Creating the DonutShoppingCartPage: Clearing all items from the list" duration="0">
+        <h2 is-upgraded>Coming Soon</h2>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Creating the DonutShoppingCartPage: Showing Total Price" duration="0">
+        <h2 is-upgraded>Coming Soon</h2>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="BONUS #1: Animating the DonutShoppingList items" duration="0">
+        <h2 is-upgraded>Coming Soon</h2>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="BONUS #2: Displaying Shopping Cart Count on Bottom Bar" duration="0">
+        <h2 is-upgraded>Coming Soon</h2>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>
